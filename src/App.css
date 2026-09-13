@@ -442,11 +442,15 @@ footer a{color:var(--blue-light);}
   background:#fff;
 }
 
+:root{
+  --fab-size:56px;
+  --fab-edge:22px;
+}
 .floating-call,
 .whatsapp-float{
   position:fixed;
-  bottom:22px;
-  width:56px;height:56px;
+  bottom:calc(var(--fab-edge) + env(safe-area-inset-bottom, 0px));
+  width:var(--fab-size);height:var(--fab-size);
   border-radius:50%;
   display:flex;align-items:center;justify-content:center;
   color:#fff;
@@ -460,11 +464,11 @@ footer a{color:var(--blue-light);}
   box-shadow:0 10px 22px rgba(0,0,0,.35), 0 0 0 3px rgba(255,255,255,.95);
 }
 .floating-call{
-  right:22px;
+  right:calc(var(--fab-edge) + env(safe-area-inset-right, 0px));
   background:var(--blue);
 }
 .whatsapp-float{
-  left:22px;
+  left:calc(var(--fab-edge) + env(safe-area-inset-left, 0px));
   background:#25D366;
 }
 .copy-toast{
@@ -567,9 +571,9 @@ footer a{color:var(--blue-light);}
 /* Chat widget */
 .chat-toggle{
   position:fixed;
-  bottom:92px;
-  right:22px;
-  width:56px;height:56px;
+  bottom:calc(var(--fab-edge) + var(--fab-size) + 14px + env(safe-area-inset-bottom, 0px));
+  right:calc(var(--fab-edge) + env(safe-area-inset-right, 0px));
+  width:var(--fab-size);height:var(--fab-size);
   border-radius:50%;
   background:var(--navy);
   color:#fff;
@@ -583,12 +587,12 @@ footer a{color:var(--blue-light);}
 .chat-toggle:hover{transform:translateY(-3px) scale(1.05);}
 .chat-panel{
   position:fixed;
-  bottom:156px;
-  right:22px;
+  bottom:calc(var(--fab-edge) + var(--fab-size)*2 + 22px + env(safe-area-inset-bottom, 0px));
+  right:calc(var(--fab-edge) + env(safe-area-inset-right, 0px));
   width:320px;
-  max-width:calc(100vw - 44px);
+  max-width:calc(100vw - 2*var(--fab-edge));
   height:420px;
-  max-height:calc(100vh - 200px);
+  max-height:calc(100vh - 220px);
   background:#fff;
   border-radius:16px;
   box-shadow:0 16px 40px rgba(0,0,0,.25);
@@ -691,10 +695,14 @@ footer a{color:var(--blue-light);}
 }
 
 @media (max-width:480px){
-  .chat-panel{
-    right:12px;
-    left:12px;
-    width:auto;
+  :root{
+    --fab-size:48px;
+    --fab-edge:14px;
   }
-  .chat-toggle{right:16px;}
+  .chat-panel{
+    right:14px;
+    left:14px;
+    width:auto;
+    max-width:none;
+  }
 }

@@ -2,16 +2,30 @@ import { useEffect, useRef, useState } from 'react'
 import { getJSON, postJSON } from '../api'
 
 const STORAGE_KEY = 'gn-tech-chat-identity'
+const IDLE_TIMEOUT_MS = 10 * 60 * 1000 // 10 minutes
+
+function loadIdentity() {
+  try {
+    const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
+    if (!stored) return null
+    if (Date.now() - stored.lastActivityAt > IDLE_TIMEOUT_MS) {
+      localStorage.removeItem(STORAGE_KEY)
+      return null
+    }
+    return stored
+  } catch {
+    return null
+  }
+}
+
+function saveIdentity(identity) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(identity))
+}
 
 export default function ChatWidget() {
   const [open, setOpen] = useState(false)
-  const [identity, setIdentity] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null')
-    } catch {
-      return null
-    }
-  })
+  const [identity, setIdentity] = useState(loadIdentity)
+  const [justExpired, setJustExpired] = useState(false)
   const [nameInput, setNameInput] = useState('')
   const [phoneInput, setPhoneInput] = useState('')
   const [messages, setMessages] = useState([])
@@ -19,6 +33,28 @@ export default function ChatWidget() {
   const [sending, setSending] = useState(false)
   const [sendError, setSendError] = useState('')
   const bottomRef = useRef(null)
+
+  function endChat() {
+    localStorage.removeItem(STORAGE_KEY)
+    setIdentity(null)
+    setMessages([])
+    setJustExpired(true)
+  }
+
+  // While the widget is open, periodically check whether the customer has
+  // gone quiet for 10 minutes and, if so, end the local session. Nothing on
+  // the server is touched - the full conversation (keyed by phone number)
+  // stays intact for the admin side; this only resets what the customer
+  // sees so a new visit starts fresh.
+  useEffect(() => {
+    if (!open || !identity) return
+    const interval = setInterval(() => {
+      if (Date.now() - identity.lastActivityAt > IDLE_TIMEOUT_MS) {
+        endChat()
+      }
+    }, 15000)
+    return () => clearInterval(interval)
+  }, [open, identity])
 
   useEffect(() => {
     if (!open || !identity) return
@@ -48,9 +84,10 @@ export default function ChatWidget() {
   function startChat(e) {
     e.preventDefault()
     if (!phoneInput.trim()) return
-    const id = { phone: phoneInput.trim(), name: nameInput.trim() }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(id))
+    const id = { phone: phoneInput.trim(), name: nameInput.trim(), lastActivityAt: Date.now() }
+    saveIdentity(id)
     setIdentity(id)
+    setJustExpired(false)
   }
 
   async function sendMessage(e) {
@@ -67,6 +104,9 @@ export default function ChatWidget() {
         message: outgoing,
       })
       setMessages((m) => [...m, saved])
+      const refreshed = { ...identity, lastActivityAt: Date.now() }
+      saveIdentity(refreshed)
+      setIdentity(refreshed)
     } catch {
       setText(outgoing)
       setSendError("Couldn't send — check your connection and try again.")
@@ -79,7 +119,12 @@ export default function ChatWidget() {
     <>
       <button
         className="chat-toggle"
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          if (!open && identity && Date.now() - identity.lastActivityAt > IDLE_TIMEOUT_MS) {
+            endChat()
+          }
+          setOpen((o) => !o)
+        }}
         aria-label={open ? 'Close chat' : 'Open chat'}
       >
         {open ? '✕' : '💭'}
@@ -94,7 +139,7 @@ export default function ChatWidget() {
 
           {!identity ? (
             <form className="chat-identity-form" onSubmit={startChat}>
-              <p>Start a conversation with us</p>
+              <p>{justExpired ? 'Chat ended after inactivity — start a new one' : 'Start a conversation with us'}</p>
               <input
                 type="text"
                 placeholder="Your name"
