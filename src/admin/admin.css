@@ -260,6 +260,11 @@
   text-overflow:ellipsis;
   white-space:nowrap;
 }
+.admin-chat-list-time{
+  font-size:.7rem;
+  color:var(--muted);
+  margin-top:2px;
+}
 .admin-chat-thread{
   background:#fff;
   border:1px solid var(--border);

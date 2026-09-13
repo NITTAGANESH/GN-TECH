@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { getJSON, postJSON } from '../api'
+import { formatChatTime } from '../utils/formatTime'
 
 const STORAGE_KEY = 'gn-tech-chat-identity'
 const IDLE_TIMEOUT_MS = 10 * 60 * 1000 // 10 minutes
@@ -39,13 +40,22 @@ export default function ChatWidget() {
     setIdentity(null)
     setMessages([])
     setJustExpired(true)
+    setOpen(false)
   }
 
-  // While the widget is open, periodically check whether the customer has
-  // gone quiet for 10 minutes and, if so, end the local session. Nothing on
-  // the server is touched - the full conversation (keyed by phone number)
-  // stays intact for the admin side; this only resets what the customer
-  // sees so a new visit starts fresh.
+  function touchActivity(base) {
+    const refreshed = { ...base, lastActivityAt: Date.now() }
+    saveIdentity(refreshed)
+    setIdentity(refreshed)
+  }
+
+  // The 10-minute window resets on ANY activity in the conversation -
+  // whether the customer sends a message or staff replies (picked up via
+  // polling below). If 10 minutes pass with silence from both sides, the
+  // local session ends and the chat closes. Nothing is deleted server-side:
+  // every message stays keyed by phone number, so the admin's Chat tab
+  // always keeps the full, continuous history regardless of how often the
+  // customer's own widget resets.
   useEffect(() => {
     if (!open || !identity) return
     const interval = setInterval(() => {
@@ -63,7 +73,18 @@ export default function ChatWidget() {
     async function poll() {
       try {
         const history = await getJSON(`/api/chat/${encodeURIComponent(identity.phone)}`)
-        if (!cancelled) setMessages(history)
+        if (cancelled) return
+        setMessages(history)
+        const latest = history[history.length - 1]
+        if (latest) {
+          const latestAt = new Date(latest.created_at).getTime()
+          setIdentity((current) => {
+            if (!current || latestAt <= current.lastActivityAt) return current
+            const refreshed = { ...current, lastActivityAt: latestAt }
+            saveIdentity(refreshed)
+            return refreshed
+          })
+        }
       } catch {
         // no history yet, or backend unreachable - ignore
       }
@@ -75,7 +96,7 @@ export default function ChatWidget() {
       cancelled = true
       clearInterval(interval)
     }
-  }, [open, identity])
+  }, [open, identity?.phone])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -104,9 +125,7 @@ export default function ChatWidget() {
         message: outgoing,
       })
       setMessages((m) => [...m, saved])
-      const refreshed = { ...identity, lastActivityAt: Date.now() }
-      saveIdentity(refreshed)
-      setIdentity(refreshed)
+      touchActivity(identity)
     } catch {
       setText(outgoing)
       setSendError("Couldn't send — check your connection and try again.")
@@ -162,8 +181,9 @@ export default function ChatWidget() {
                   <p className="chat-empty">Send us a message and we'll get back to you here.</p>
                 )}
                 {messages.map((m) => (
-                  <div key={m.id} className={`chat-bubble ${m.sender}`}>
-                    {m.message}
+                  <div key={m.id} className={`chat-bubble-wrap ${m.sender}`}>
+                    <div className={`chat-bubble ${m.sender}`}>{m.message}</div>
+                    <span className="chat-bubble-time">{formatChatTime(m.created_at)}</span>
                   </div>
                 ))}
                 <div ref={bottomRef} />

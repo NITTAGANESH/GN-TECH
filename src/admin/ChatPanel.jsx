@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { adminGet, adminPostJSON } from '../api'
+import { formatChatTime } from '../utils/formatTime'
 
 export default function ChatPanel({ token }) {
   const [conversations, setConversations] = useState(null)
@@ -86,6 +87,7 @@ export default function ChatPanel({ token }) {
               {c.last_sender === 'staff' ? 'You: ' : ''}
               {c.last_message}
             </div>
+            <div className="admin-chat-list-time">{formatChatTime(c.last_message_at)}</div>
           </button>
         ))}
       </div>
@@ -98,8 +100,9 @@ export default function ChatPanel({ token }) {
             <div className="admin-chat-thread-header">{selectedPhone}</div>
             <div className="chat-messages admin-chat-messages">
               {messages.map((m) => (
-                <div key={m.id} className={`chat-bubble ${m.sender}`}>
-                  {m.message}
+                <div key={m.id} className={`chat-bubble-wrap ${m.sender}`}>
+                  <div className={`chat-bubble ${m.sender}`}>{m.message}</div>
+                  <span className="chat-bubble-time">{formatChatTime(m.created_at)}</span>
                 </div>
               ))}
               <div ref={bottomRef} />
