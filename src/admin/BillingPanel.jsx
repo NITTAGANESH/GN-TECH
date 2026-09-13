@@ -14,6 +14,7 @@ export default function BillingPanel({ token }) {
   const [customerPhone, setCustomerPhone] = useState('')
   const [items, setItems] = useState([{ ...EMPTY_ITEM }])
   const [taxPercent, setTaxPercent] = useState('0')
+  const [warranty, setWarranty] = useState('')
   const [notes, setNotes] = useState('')
   const [creating, setCreating] = useState(false)
   const [lastBill, setLastBill] = useState(null)
@@ -60,6 +61,7 @@ export default function BillingPanel({ token }) {
             unit_price: parseFloat(it.unit_price) || 0,
           })),
         tax_percent: parseFloat(taxPercent) || 0,
+        warranty: warranty || null,
         notes: notes || null,
       }
       const bill = await adminPostJSON('/api/admin/bills', token, payload)
@@ -68,6 +70,7 @@ export default function BillingPanel({ token }) {
       setCustomerPhone('')
       setItems([{ ...EMPTY_ITEM }])
       setTaxPercent('0')
+      setWarranty('')
       setNotes('')
       loadBills()
     } catch (err) {
@@ -155,9 +158,18 @@ export default function BillingPanel({ token }) {
             <input type="number" min="0" max="100" step="0.01" value={taxPercent} onChange={(e) => setTaxPercent(e.target.value)} />
           </div>
           <div className="form-row">
-            <label>Notes (optional)</label>
-            <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
+            <label>Warranty (optional)</label>
+            <input
+              type="text"
+              placeholder="e.g. 3 months on parts and labor"
+              value={warranty}
+              onChange={(e) => setWarranty(e.target.value)}
+            />
           </div>
+        </div>
+        <div className="form-row" style={{ marginTop: 12 }}>
+          <label>Notes (optional)</label>
+          <input type="text" value={notes} onChange={(e) => setNotes(e.target.value)} />
         </div>
 
         <div className="billing-totals">
@@ -176,6 +188,7 @@ export default function BillingPanel({ token }) {
         <div className="billing-success">
           <h4>{lastBill.bill_number} created ✅</h4>
           <p>Total: {money(lastBill.total)}</p>
+          {lastBill.warranty && <p>Warranty: {lastBill.warranty}</p>}
           <div className="billing-success-actions">
             <a className="btn-primary" href={lastBill.pdf_url} target="_blank" rel="noopener">
               Download PDF
