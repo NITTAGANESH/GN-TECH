@@ -5,12 +5,14 @@ import FeedbackPanel from './FeedbackPanel'
 import FinancialsPanel from './FinancialsPanel'
 import GalleryPanel from './GalleryPanel'
 import ChatPanel from './ChatPanel'
+import BillingPanel from './BillingPanel'
 
 const TABS = [
   { key: 'stats', label: 'Overview', Component: StatsPanel },
   { key: 'chat', label: 'Chat', Component: ChatPanel },
   { key: 'feedback', label: 'Feedback', Component: FeedbackPanel },
   { key: 'financials', label: 'Financials', Component: FinancialsPanel },
+  { key: 'billing', label: 'Billing', Component: BillingPanel },
   { key: 'gallery', label: 'Gallery', Component: GalleryPanel },
 ]
 
