@@ -1,0 +1,7 @@
+export const PHONE_PRIMARY = '+919154736458'
+export const PHONE_PRIMARY_DISPLAY = '91547 36458'
+export const PHONE_FALLBACK = '+918328148798'
+export const PHONE_FALLBACK_DISPLAY = '83281 48798'
+export const WHATSAPP_URL = 'https://wa.me/919154736458'
+export const ADDRESS = '3-100/26, Penta Reddy Colony, West Hanuman Nagar, Boduppal, Hyderabad, Telangana 500092'
+export const MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=GN+TECH+SOLUTIONS+Computer+Repair+Center+Boduppal+Hyderabad'
