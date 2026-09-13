@@ -17,6 +17,7 @@ export default function ChatWidget() {
   const [messages, setMessages] = useState([])
   const [text, setText] = useState('')
   const [sending, setSending] = useState(false)
+  const [sendError, setSendError] = useState('')
   const bottomRef = useRef(null)
 
   useEffect(() => {
@@ -56,18 +57,19 @@ export default function ChatWidget() {
     e.preventDefault()
     if (!text.trim() || sending) return
     setSending(true)
+    setSendError('')
     const outgoing = text.trim()
     setText('')
     try {
       const saved = await postJSON('/api/chat', {
         phone: identity.phone,
         name: identity.name,
-        sender: 'customer',
         message: outgoing,
       })
       setMessages((m) => [...m, saved])
     } catch {
       setText(outgoing)
+      setSendError("Couldn't send — check your connection and try again.")
     } finally {
       setSending(false)
     }
@@ -121,14 +123,21 @@ export default function ChatWidget() {
                 ))}
                 <div ref={bottomRef} />
               </div>
+              {sendError && <p className="chat-send-error">{sendError}</p>}
               <form className="chat-input-row" onSubmit={sendMessage}>
                 <input
                   type="text"
                   value={text}
-                  onChange={(e) => setText(e.target.value)}
+                  onChange={(e) => {
+                    setText(e.target.value)
+                    if (sendError) setSendError('')
+                  }}
                   placeholder="Type a message..."
+                  disabled={sending}
                 />
-                <button type="submit" disabled={sending} aria-label="Send">➤</button>
+                <button type="submit" disabled={sending} aria-label="Send">
+                  {sending ? '…' : '➤'}
+                </button>
               </form>
             </>
           )}

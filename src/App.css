@@ -655,11 +655,22 @@ footer a{color:var(--blue-light);}
   border:1px solid var(--border);
   border-bottom-left-radius:4px;
 }
+.chat-send-error{
+  color:#c0392b;
+  background:#fdecea;
+  font-size:.78rem;
+  padding:6px 14px;
+  margin:0;
+  text-align:center;
+}
 .chat-input-row{
   display:flex;
   border-top:1px solid var(--border);
   padding:8px;
   gap:8px;
+}
+.chat-input-row input:disabled{
+  opacity:.6;
 }
 .chat-input-row input{
   flex:1;
