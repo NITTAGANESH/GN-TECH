@@ -1,3 +1,5 @@
+import FeedbackForm from './FeedbackForm'
+
 export default function Reviews() {
   return (
     <section id="reviews">
@@ -33,6 +35,9 @@ export default function Reviews() {
           </div>
           <p>29 more verified customers rated us 5.0★ on Google. Read all reviews on our Google Business profile.</p>
         </div>
+      </div>
+      <div style={{ maxWidth: 480, margin: '48px auto 0' }}>
+        <FeedbackForm />
       </div>
     </section>
   )

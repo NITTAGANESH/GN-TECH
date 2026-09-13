@@ -1,35 +1,17 @@
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
-import TopOffer from './components/TopOffer'
-import Header from './components/Header'
-import Hero from './components/Hero'
-import Stats from './components/Stats'
-import Services from './components/Services'
-import Gallery from './components/Gallery'
-import Products from './components/Products'
-import About from './components/About'
-import Reviews from './components/Reviews'
-import Contact from './components/Contact'
-import Footer from './components/Footer'
-import FloatingButtons from './components/FloatingButtons'
-import Toast from './components/Toast'
+import './admin/admin.css'
+import Site from './Site'
+import AdminApp from './admin/AdminApp'
 
 function App() {
   return (
-    <>
-      <TopOffer />
-      <Header />
-      <Hero />
-      <Stats />
-      <Services />
-      <Gallery />
-      <Products />
-      <About />
-      <Reviews />
-      <Contact />
-      <Footer />
-      <FloatingButtons />
-      <Toast />
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Site />} />
+        <Route path="/admin" element={<AdminApp />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 

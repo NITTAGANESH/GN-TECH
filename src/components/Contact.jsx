@@ -1,4 +1,5 @@
 import CallLink from './CallLink'
+import ContactForm from './ContactForm'
 import {
   PHONE_PRIMARY,
   PHONE_PRIMARY_DISPLAY,
@@ -21,7 +22,13 @@ export default function Contact() {
           <h3>Contact Information</h3>
           <div className="contact-row">
             <div className="icon">📍</div>
-            <div><h4>Address</h4><p>{ADDRESS}</p></div>
+            <div>
+              <h4>Address</h4>
+              <p>{ADDRESS}</p>
+              <a href={MAPS_URL} target="_blank" rel="noopener" style={{ fontSize: '.82rem', color: 'var(--blue)', fontWeight: 600 }}>
+                Open in Google Maps →
+              </a>
+            </div>
           </div>
           <div className="contact-row">
             <div className="icon">📞</div>
@@ -44,14 +51,7 @@ export default function Contact() {
             💬 Chat on WhatsApp
           </a>
         </div>
-        <div className="contact-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
-          <div className="icon" style={{ width: 60, height: 60, fontSize: '1.8rem', marginBottom: 16 }}>🗺️</div>
-          <h3>Find Us on the Map</h3>
-          <p style={{ color: 'var(--muted)', marginBottom: 20 }}>Penta Reddy Colony, West Hanuman Nagar, Boduppal, Hyderabad</p>
-          <a className="btn-primary" target="_blank" rel="noopener" href={MAPS_URL}>
-            Open in Google Maps
-          </a>
-        </div>
+        <ContactForm />
       </div>
     </section>
   )
