@@ -4,12 +4,13 @@ import StatsPanel from './StatsPanel'
 import FeedbackPanel from './FeedbackPanel'
 import FinancialsPanel from './FinancialsPanel'
 import GalleryPanel from './GalleryPanel'
-import ChatPanel from './ChatPanel'
+// Chat tab temporarily disabled - re-enable by restoring this import and
+// the { key: 'chat', ... } entry below when ready to launch it.
+// import ChatPanel from './ChatPanel'
 import BillingPanel from './BillingPanel'
 
 const TABS = [
   { key: 'stats', label: 'Overview', Component: StatsPanel },
-  { key: 'chat', label: 'Chat', Component: ChatPanel },
   { key: 'feedback', label: 'Feedback', Component: FeedbackPanel },
   { key: 'financials', label: 'Financials', Component: FinancialsPanel },
   { key: 'billing', label: 'Billing', Component: BillingPanel },

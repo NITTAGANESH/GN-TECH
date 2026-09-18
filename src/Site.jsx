@@ -10,7 +10,9 @@ import Reviews from './components/Reviews'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import FloatingButtons from './components/FloatingButtons'
-import ChatWidget from './components/ChatWidget'
+// Chat widget temporarily disabled - re-enable by restoring the import
+// and <ChatWidget /> below when ready to launch it.
+// import ChatWidget from './components/ChatWidget'
 import Toast from './components/Toast'
 
 export default function Site() {
@@ -28,7 +30,6 @@ export default function Site() {
       <Contact />
       <Footer />
       <FloatingButtons />
-      <ChatWidget />
       <Toast />
     </>
   )
