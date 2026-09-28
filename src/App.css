@@ -515,6 +515,9 @@ footer a{color:var(--blue-light);}
 }
 .form-row input,
 .form-row textarea{
+  width:100%;
+  max-width:100%;
+  box-sizing:border-box;
   border:1px solid var(--border);
   border-radius:10px;
   padding:10px 12px;
@@ -522,6 +525,16 @@ footer a{color:var(--blue-light);}
   font-family:inherit;
   color:var(--text);
   background:#fff;
+}
+/* Some Android browsers render the native file-picker control (button +
+   filename text) wider than its container regardless of width:100%,
+   which silently overflows the page horizontally on narrow phones. */
+.form-row input[type="file"]{
+  width:100%;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  padding:8px 10px;
 }
 .form-row input:focus,
 .form-row textarea:focus{
