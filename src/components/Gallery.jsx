@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { getJSON } from '../api'
+
 const GALLERY_ITEMS = [
   { src: 'images/repair-desk.jpg', alt: 'Laptop being serviced on our workbench', caption: 'Laptop Servicing Bench' },
   { src: 'images/repair-screen.jpg', alt: 'Laptop screen replacement in progress', caption: 'Screen Replacement' },
@@ -24,6 +27,14 @@ function DataRecoveryTile() {
 }
 
 export default function Gallery() {
+  const [uploaded, setUploaded] = useState([])
+
+  useEffect(() => {
+    getJSON('/api/gallery?category=gallery')
+      .then(setUploaded)
+      .catch(() => {})
+  }, [])
+
   return (
     <section id="gallery">
       <div className="section-title">
@@ -39,6 +50,12 @@ export default function Gallery() {
           </div>
         ))}
         <DataRecoveryTile />
+        {uploaded.map((item) => (
+          <div className="gallery-item" key={item.id}>
+            <img src={item.url} alt={item.title || 'GN Tech Solutions work'} />
+            {item.title && <div className="gallery-caption">{item.title}</div>}
+          </div>
+        ))}
       </div>
     </section>
   )

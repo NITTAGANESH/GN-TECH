@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react'
+import { getJSON } from '../api'
+
 const PRODUCTS = [
   { src: 'images/product-adapter.jpg', alt: 'Laptop charger adapter', label: 'Laptop Adapters' },
   { src: 'images/product-battery.jpg', alt: 'Laptop battery', label: 'Laptop Batteries' },
@@ -8,6 +11,14 @@ const PRODUCTS = [
 ]
 
 export default function Products() {
+  const [uploaded, setUploaded] = useState([])
+
+  useEffect(() => {
+    getJSON('/api/gallery?category=accessories')
+      .then(setUploaded)
+      .catch(() => {})
+  }, [])
+
   return (
     <section id="products">
       <div className="section-title">
@@ -20,6 +31,12 @@ export default function Products() {
           <div className="product-card" key={p.label}>
             <img src={p.src} alt={p.alt} />
             <p>{p.label}</p>
+          </div>
+        ))}
+        {uploaded.map((item) => (
+          <div className="product-card" key={item.id}>
+            <img src={item.url} alt={item.title || 'Accessory'} />
+            <p>{item.title || 'Accessory'}</p>
           </div>
         ))}
       </div>

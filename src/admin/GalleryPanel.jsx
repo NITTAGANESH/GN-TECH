@@ -64,7 +64,8 @@ export default function GalleryPanel({ token }) {
         />
         <select value={category} onChange={(e) => setCategory(e.target.value)}>
           <option value="gallery">Gallery (Our Work)</option>
-          <option value="product">Product</option>
+          <option value="laptop">Laptop (for sale)</option>
+          <option value="accessories">Accessories (battery, screen, parts)</option>
         </select>
         <button type="submit" className="btn-primary" disabled={uploading}>
           {uploading ? 'Uploading...' : 'Upload Image'}
