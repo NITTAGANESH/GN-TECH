@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react'
 import { adminGet, adminDelete, adminRequest } from '../api'
 
+function hasSummary(d) {
+  return d.rating != null || d.total != null || !!d.maps_url || !!d.write_url
+}
+
 export default function ReviewsPanel({ token }) {
+  const [editing, setEditing] = useState(false)
   const [data, setData] = useState(null)
   const [error, setError] = useState('')
   const [saved, setSaved] = useState(false)
@@ -19,26 +24,48 @@ export default function ReviewsPanel({ token }) {
   }
 
   useEffect(() => {
-    adminGet('/api/admin/reviews', token).then(apply).catch((e) => setError(e.message))
+    adminGet('/api/admin/reviews', token)
+      .then((d) => {
+        apply(d)
+        setEditing(!hasSummary(d))
+      })
+      .catch((e) => setError(e.message))
   }, [token])
+
+  async function putSummary(body) {
+    return adminRequest('/api/admin/reviews/summary', token, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+  }
+
+  async function deleteSummary() {
+    setError('')
+    setSaved(false)
+    try {
+      const d = await putSummary({ rating: null, total: null, maps_url: null, write_url: null })
+      apply(d)
+      setEditing(true)
+    } catch (err) {
+      setError(err.message)
+    }
+  }
 
   async function saveSummary(e) {
     e.preventDefault()
     setError('')
     setSaved(false)
     try {
-      const d = await adminRequest('/api/admin/reviews/summary', token, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          rating: summary.rating === '' ? null : parseFloat(summary.rating),
-          total: summary.total === '' ? null : parseInt(summary.total, 10),
-          maps_url: summary.maps_url || null,
-          write_url: summary.write_url || null,
-        }),
+      const d = await putSummary({
+        rating: summary.rating === '' ? null : parseFloat(summary.rating),
+        total: summary.total === '' ? null : parseInt(summary.total, 10),
+        maps_url: summary.maps_url || null,
+        write_url: summary.write_url || null,
       })
       apply(d)
       setSaved(true)
+      setEditing(!hasSummary(d))
     } catch (err) {
       setError(err.message)
     }
@@ -77,6 +104,27 @@ export default function ReviewsPanel({ token }) {
         shows them in the Reviews section. Leave everything empty to show the default content.
       </p>
 
+      {!editing && hasSummary(data) && (
+        <div className="billing-form">
+          <h3>Google Rating &amp; Links</h3>
+          <p><strong>Rating:</strong> {data.rating != null ? `${data.rating} ★` : '—'}</p>
+          <p><strong>Total reviews:</strong> {data.total ?? '—'}</p>
+          <p style={{ wordBreak: 'break-all' }}><strong>See all reviews link:</strong> {data.maps_url || '—'}</p>
+          <p style={{ wordBreak: 'break-all' }}><strong>Write a review link:</strong> {data.write_url || '—'}</p>
+          {saved && <p style={{ color: '#1b8a3c', fontSize: '.85rem', marginTop: 8 }}>Saved ✓</p>}
+          {error && <p className="form-error">{error}</p>}
+          <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
+            <button type="button" className="btn-primary" style={{ flex: 1 }} onClick={() => { setSaved(false); setEditing(true) }}>
+              Edit
+            </button>
+            <button type="button" className="admin-delete-btn" style={{ padding: '10px 22px' }} onClick={deleteSummary}>
+              Delete
+            </button>
+          </div>
+        </div>
+      )}
+
+      {(editing || !hasSummary(data)) && (
       <form className="billing-form" onSubmit={saveSummary}>
         <h3>Google Rating &amp; Links</h3>
         <div className="billing-form-row">
@@ -98,9 +146,21 @@ export default function ReviewsPanel({ token }) {
           <input type="url" placeholder="https://g.page/r/.../review" value={summary.write_url} onChange={(e) => setSummary({ ...summary, write_url: e.target.value })} />
         </div>
         {error && <p className="form-error">{error}</p>}
-        {saved && <p style={{ color: '#1b8a3c', fontSize: '.85rem' }}>Saved ✓</p>}
-        <button type="submit" className="btn-primary">Save</button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <button type="submit" className="btn-primary" style={{ flex: 1 }}>Save</button>
+          {hasSummary(data) && (
+            <button
+              type="button"
+              className="admin-delete-btn"
+              style={{ padding: '10px 22px' }}
+              onClick={() => { apply(data); setEditing(false) }}
+            >
+              Cancel
+            </button>
+          )}
+        </div>
       </form>
+      )}
 
       <form className="billing-form" onSubmit={addReview}>
         <h3>Add a Review</h3>
