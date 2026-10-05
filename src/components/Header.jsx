@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+import { getJSON } from '../api'
 import CallLink from './CallLink'
 import { PHONE_PRIMARY, PHONE_PRIMARY_DISPLAY } from '../constants'
 
@@ -12,6 +14,20 @@ const NAV_LINKS = [
 ]
 
 export default function Header() {
+  const [hasLaptops, setHasLaptops] = useState(false)
+
+  useEffect(() => {
+    getJSON('/api/gallery?category=laptop')
+      .then((items) => setHasLaptops(items.length > 0))
+      .catch(() => {})
+  }, [])
+
+  const links = hasLaptops
+    ? NAV_LINKS.flatMap((l) =>
+        l.href === '#gallery' ? [l, { href: '#laptops', label: 'Laptops' }] : [l],
+      )
+    : NAV_LINKS
+
   return (
     <header>
       <div className="nav">
@@ -20,7 +36,7 @@ export default function Header() {
           GN TECH SOLUTIONS
         </div>
         <ul id="navMenu">
-          {NAV_LINKS.map((link) => (
+          {links.map((link) => (
             <li key={link.href}>
               <a href={link.href}>{link.label}</a>
             </li>

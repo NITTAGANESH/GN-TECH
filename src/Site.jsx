@@ -4,6 +4,7 @@ import Hero from './components/Hero'
 import Stats from './components/Stats'
 import Services from './components/Services'
 import Gallery from './components/Gallery'
+import Laptops from './components/Laptops'
 import Products from './components/Products'
 import About from './components/About'
 import Reviews from './components/Reviews'
@@ -24,6 +25,7 @@ export default function Site() {
       <Stats />
       <Services />
       <Gallery />
+      <Laptops />
       <Products />
       <About />
       <Reviews />
