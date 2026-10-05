@@ -8,10 +8,12 @@ import GalleryPanel from './GalleryPanel'
 // the { key: 'chat', ... } entry below when ready to launch it.
 // import ChatPanel from './ChatPanel'
 import BillingPanel from './BillingPanel'
+import ReviewsPanel from './ReviewsPanel'
 
 const TABS = [
   { key: 'stats', label: 'Overview', Component: StatsPanel },
   { key: 'feedback', label: 'Feedback', Component: FeedbackPanel },
+  { key: 'reviews', label: 'Google Reviews', Component: ReviewsPanel },
   { key: 'financials', label: 'Financials', Component: FinancialsPanel },
   { key: 'billing', label: 'Billing', Component: BillingPanel },
   { key: 'gallery', label: 'Gallery', Component: GalleryPanel },

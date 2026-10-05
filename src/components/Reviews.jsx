@@ -30,12 +30,19 @@ export default function Reviews() {
         <div className="score">{Number(rating).toFixed(1)}</div>
         <div className="stars"><Stars value={rating} /></div>
         <p>Based on <strong>{total} Google Reviews</strong></p>
-        {live?.maps_url && (
-          <p style={{ marginTop: 8 }}>
-            <a href={live.maps_url} target="_blank" rel="noopener" style={{ color: 'var(--blue)', fontWeight: 600, fontSize: '.85rem' }}>
-              See all reviews on Google →
-            </a>
-          </p>
+        {(live?.write_url || live?.maps_url) && (
+          <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 14 }}>
+            {live.write_url && (
+              <a className="btn-primary" href={live.write_url} target="_blank" rel="noopener" style={{ padding: '10px 20px', fontSize: '.88rem' }}>
+                ★ Write a Google review
+              </a>
+            )}
+            {live.maps_url && (
+              <a className="btn-secondary" href={live.maps_url} target="_blank" rel="noopener" style={{ padding: '10px 20px', fontSize: '.88rem', border: '1px solid var(--border)' }}>
+                See all reviews on Google
+              </a>
+            )}
+          </div>
         )}
       </div>
 
