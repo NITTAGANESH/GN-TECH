@@ -329,6 +329,7 @@ section{
   font-weight:700;
   flex-shrink:0;
 }
+img.reviewer-avatar{object-fit:cover;}
 .reviewer-head h4{font-size:.95rem;}
 .reviewer-head .stars{font-size:.85rem;margin:0;}
 .reviewer-card p{color:var(--muted);font-size:.9rem;font-style:italic;}
